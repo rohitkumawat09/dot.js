@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Circle</title>
+    <link rel="stylesheet" href="dote.css">
+</head>
+<body>
+    <div id="circleone">
+        <button id="Undo" disabled>Undo</button>
+        <button id="Redo" disabled>Redo</button>
+        <button id="Reset" disabled>Reset</button>
+    </div>
+    <div id="result"></div>
+    <script>
+        const undobtn = document.getElementById("Undo");
+        const redobtn = document.getElementById("Redo");
+        const reset = document.getElementById("Reset");
+        const showResult = document.getElementById("result")
+
+        const undoCircles = [];
+        const redoCircles = [];
+
+        const colours = [
+            "#fff", "#FFBF00", "#FF7F50", "#DE3163", "#40E0D0","purple","grey","cyan",
+            "#6495ED", "#FF00FF", "#800080", "#008000", "#000","red","green","orangered"
+        ];
+
+        function RandomColor() {
+            return colours[Math.floor(Math.random() * colours.length)];
+        }
+
+        function updateButton() {
+            undobtn.disabled = undoCircles.length === 0;
+            redobtn.disabled = redoCircles.length === 0;
+            reset.disabled = undoCircles.length === 0 && redoCircles.length === 0;
+        }
+
+        showResult.addEventListener("click", (e) => {
+            if (e.target !== showResult) return;
+            const x = e.pageX;
+            const y = e.pageY;
+
+            const circle = document.createElement("div");
+            circle.classList.add("circle");
+
+            circle.style.width = "20px";
+            circle.style.height = "20px";
+
+            circle.style.left = `${x - 10}px`;
+            circle.style.top = `${y - 10}px`;
+
+            const color =RandomColor();
+            circle.style.backgroundColor = color;
+
+            showResult.appendChild(circle);
+            undoCircles.push(circle);
+            redoCircles.length = 0;
+
+            updateButton();
+        });
+
+        undobtn.addEventListener("click", () => {
+            if (undoCircles.length > 0) {
+                const circle = undoCircles.pop();
+                redoCircles.push(circle);
+                circle.remove();
+                updateButton();
+            }
+        });
+
+        redobtn.addEventListener("click", () => {
+            if (redoCircles.length > 0) {
+                const circle = redoCircles.pop();
+                showResult.appendChild(circle);
+                undoCircles.push(circle);
+                updateButton();
+            }
+        });
+
+        reset.addEventListener("click", () => {
+            undoCircles.forEach(circle => circle.remove());
+            undoCircles.length = 0;
+            redoCircles.length = 0;
+
+            updateButton();
+        });
+        
+    </script>
+</body>
+</html>
